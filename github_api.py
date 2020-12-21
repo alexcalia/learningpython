@@ -10,14 +10,18 @@ def create_query(languages, min_stars=50000):
     return query
 
 
-def repos_with_most_stars(languages):
+def repos_with_most_stars(languages, sort="stars", order="desc"):
     gh = "https://api.github.com/search/repositories"
     query = create_query(languages)
-    parameters = {"q": query, "sort": "stars", "order": "desc"}
+    parameters = {"q": query, "sort": sort, "order": order}
     response = requests.get(gh, params=parameters)
 
-    response_json = response.json()["items"]
-    return response_json
+    status_code = response.status_code
+    if status_code != 200:
+        raise RuntimeError("An error occurred: {status_code}")
+    else:
+        response_json = response.json()["items"]
+        return response_json
 
 
 if __name__ == "__main__":
